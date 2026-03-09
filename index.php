@@ -61,7 +61,7 @@ $display_msg = $messages[$msg_key] ?? '';
             border: 1px solid #ddd;
             padding: 20px;
             border-radius: 8px;
-            width: 150px;
+            width: fit-content;
             text-decoration: none;
             color: #333;
             transition: 0.2s;
@@ -98,7 +98,14 @@ $display_msg = $messages[$msg_key] ?? '';
         <div class="public-actions">
             <a href="survey.php" class="action-card"> <!-- survey -->
                 <div>📋</div>
-                <div>填寫問卷</div>
+                <div>
+                    填寫問卷<br>
+                    <?php if ($isLoggedIn): ?>
+                        <span>(已登入)</span>
+                    <?php else: ?>
+                        <span>(需要登入, 以確保不會重復填寫問卷.)</span>
+                    <?php endif; ?>
+                </div>
             </a>
         </div>
         <!-- 3. Logic: Only members can see these cards -->

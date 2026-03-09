@@ -60,10 +60,7 @@
     cursor: pointer;
 }
 
-.form-radio-label .form-radio-input:checked~.radio-checkmark {
-    background-color: #2196F3;
-    border-color: #2196F3;
-}
+
 
 .form-link-button {
     border: none;
@@ -77,6 +74,15 @@
 .form-link-button:focus {
     color: #0056b3;
     text-decoration: underline;
+}
+
+.form-radio-label .form-radio-input:checked~.radio-checkmark {
+    background-color: #2196F3;
+    border-color: #2196F3;
+}
+
+.form-radio-label .form-radio-input:checked~.radio-checkmark:after {
+    display: block;
 }
 
 .radio-checkmark {
@@ -103,9 +109,37 @@
     background: white;
 }
 
-.form-radio-label .form-radio-input:checked~.radio-checkmark:after {
+.form-radio-label .form-radio-input:checked~.checkbox-checkmark {
+    background-color: #2196F3;
+    border-color: #2196F3;
+}
+
+.form-radio-label .form-radio-input:checked~.checkbox-checkmark:after {
     display: block;
 }
+
+.checkbox-checkmark {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border: 2px solid #ccc;
+}
+
+.checkbox-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    transform: translate(-50%, -50%);
+    background: white;
+}
+
 
 .form-submit-button {
     text-align: center;
