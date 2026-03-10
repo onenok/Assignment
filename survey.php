@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'connect.php';
-
+require_once 'array_any.php';
 // 檢查是否已登入
 if (empty($_SESSION['login'])) {
     header('Location: login.php');
@@ -271,11 +271,10 @@ $stmt->close();
                     $requiredClass = $question['is_required'] ? 'required' : '';
                     $saved_value = $saved_answers[$question['question_id']] ?? '';
                 ?>
-                    <div class="form-input-group" 
-                    <?php if ($question['page_id'] != $page_id): ?>
-                    style="display:none;"
-                    <?php endif; ?>
-                    >
+                    <div class="form-input-group"
+                        <?php if ($question['page_id'] != $page_id): ?>
+                        style="display:none;"
+                        <?php endif; ?>>
                         <label class="form-label <?php echo $requiredClass; ?>">
                             <?php echo htmlspecialchars($question['question_text']); ?>
                         </label>
@@ -292,15 +291,37 @@ $stmt->close();
                                 $stmt->bind_param("i", $question['question_id']);
                                 $stmt->execute();
                                 $options = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                                $hasOther = var_dump(array_any($options, function($o) { return $o['is_other'] == true;}));
                                 foreach ($options as $option):
                                 ?>
                                     <label class="form-radio-label">
-                                        <input type="radio" name="question_<?php echo $question['question_id']; ?>"
-                                            value="<?php echo htmlspecialchars($option['option_text']); ?>"
-                                            class="form-radio-input"
-                                            <?php echo ($saved_value == $option['option_text']) ? 'checked' : ''; ?>>
-                                        <span class="radio-checkmark"></span>
-                                        <?php echo htmlspecialchars($option['option_text']); ?>
+                                        <?php if (!$hasOther): ?>
+                                            <input type="radio" name="question_<?php echo $question['question_id']; ?>"
+                                                value="<?php echo htmlspecialchars($option['option_text']); ?>"
+                                                class="form-radio-input"
+                                                <?php echo ($saved_value == $option['option_text']) ? 'checked' : ''; ?>>
+                                            <span class="radio-checkmark"></span>
+                                            <?php echo htmlspecialchars($option['option_text']); ?>
+                                        <?php elseif ($hasOther && !$option['is_other']): ?>
+                                            <input type="radio" name="question_<?php echo $question['question_id']; ?>"
+                                                value="<?php echo htmlspecialchars($option['option_text']); ?>"
+                                                class="form-radio-input"
+                                                <?php echo ($saved_value == $option['option_text']) ? 'checked' : ''; ?>
+                                                onchange="this.parentNode.querySelector('input[data-otherText]') && (this.parentNode.querySelector('input[data-otherText]').disabled = true);">
+                                            <span class="radio-checkmark"></span>
+                                            <?php echo htmlspecialchars($option['option_text']); ?>
+                                        <?php else: ?>
+                                            <input type="radio" name="question_<?php echo $question['question_id']; ?>"
+                                                value="<?php echo htmlspecialchars($option['option_text']); ?>"
+                                                class="form-radio-input"
+                                                <?php echo ($saved_value == $option['option_text']) ? 'checked' : ''; ?>
+                                                onchange="this.parentNode.querySelector('input[data-otherText]') && (this.parentNode.querySelector('input[data-otherText]').disabled = false);">
+                                            <span class="radio-checkmark"></span>
+                                            <?php echo htmlspecialchars($option['option_text']); ?>
+                                            <input type="text" name="other_<?php echo $question['question_id']; ?>"
+                                                value="<?php echo isset($saved_other[$question['question_id']]) ? htmlspecialchars($saved_other[$question['question_id']]) : ''; ?>"
+                                                class="form-other-input" placeholder="請填寫其他選項" disabled data-otherText="true">
+                                        <?php endif; ?>
                                     </label>
                                 <?php endforeach; ?>
                             </div>
@@ -311,16 +332,31 @@ $stmt->close();
                                 $stmt->bind_param("i", $question['question_id']);
                                 $stmt->execute();
                                 $options = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                                $hasOther = var_dump(array_any($options, function($o) { return $o['is_other'] == true;}));
                                 $saved_values = is_array($saved_value) ? $saved_value : explode(', ', $saved_value);
                                 foreach ($options as $option):
                                 ?>
                                     <label class="form-radio-label">
-                                        <input type="checkbox" name="question_<?php echo $question['question_id']; ?>[]"
-                                            value="<?php echo htmlspecialchars($option['option_text']); ?>"
-                                            class="form-radio-input"
-                                            <?php echo in_array($option['option_text'], $saved_values) ? 'checked' : ''; ?>>
-                                        <span class="checkbox-checkmark"></span>
-                                        <?php echo htmlspecialchars($option['option_text']); ?>
+                                        <?php if (!$option['is_other']): ?>
+                                            <input type="checkbox" name="question_<?php echo $question['question_id']; ?>[]"
+                                                value="<?php echo htmlspecialchars($option['option_text']); ?>"
+                                                class="form-radio-input"
+                                                <?php echo in_array($option['option_text'], $saved_values) ? 'checked' : ''; ?>>
+                                            <span class="checkbox-checkmark"></span>
+                                            <?php echo htmlspecialchars($option['option_text']); ?>
+                                        <?php else: ?>
+                                            <input type="checkbox" name="question_<?php echo $question['question_id']; ?>[]"
+                                                value="<?php echo htmlspecialchars($option['option_text']); ?>"
+                                                class="form-radio-input"
+                                                <?php echo in_array($option['option_text'], $saved_values) ? 'checked' : ''; ?>
+                                                onchange="console.log('a');">
+                                            ><!--this.nextElementSibling.nextElementSibling.disabled = !this.checked;-->
+                                            <span class="checkbox-checkmark"></span>
+                                            <?php echo htmlspecialchars($option['option_text']); ?>
+                                            <input type="text" name="other_<?php echo $question['question_id']; ?>"
+                                                value="<?php echo isset($saved_other[$question['question_id']]) ? htmlspecialchars($saved_other[$question['question_id']]) : ''; ?>"
+                                                class="form-other-input" placeholder="請填寫其他選項" disabled>
+                                        <?php endif; ?>
                                     </label>
                                 <?php endforeach; ?>
                             </div>

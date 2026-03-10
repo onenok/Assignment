@@ -61,17 +61,21 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
             margin-bottom: 20px;
         }
 
+        @property --progress {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
         .progress-circle {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: conic-gradient(#28a745 0deg var(--progress), #e9ecef var(--progress) 360deg);
-            -webkit-mask: radial-gradient(transparent 45px, black 45px);
-            mask: radial-gradient(transparent 45px, black 45px);
+            background: conic-gradient(#007bff 0deg var(--progress), #e9ecef var(--progress) 360deg);
             position: relative;
             margin: 0 auto 20px;
             animation: fillProgress 2.5s ease-out forwards;
-            transition: background-image 2.5s;
+            transition: --progress 0s ease-out;
         }
 
         /* 動畫從 0 開始填滿 */
@@ -96,6 +100,7 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
             font-size: 28px;
             font-weight: bold;
             color: #333;
+            z-index: 2;
         }
 
         /* 確保 mask 相容 */
@@ -107,17 +112,6 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
             to {
                 --progress: <?php echo $progress * 3.6; ?>deg;
             }
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            z-index: 1;
         }
 
         .stats-grid {
@@ -192,9 +186,9 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
             <div class="progress-circle"
                 style="--progress: <?php echo $progress * 3.6; ?>deg;"
                 data-progress="<?php echo $progress; ?>">
-                <div class="progress-text">
-                    <?php echo $progress; ?>%
-                </div>
+                <svg>
+                    <circle r="47" cx="60" cy="60" fill="#fff"></circle>
+                </svg>
             </div>
 
             <div class="stats-grid">
