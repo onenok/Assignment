@@ -76,9 +76,6 @@ try {
     // 提交
     $conn->commit();
     
-    // 清除問卷session標記
-    $_SESSION['survey_completed'] = true;
-    
     header('Location: survey.php?success=1');
     exit;
     
