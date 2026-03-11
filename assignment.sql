@@ -3,10 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2026-03-10 16:00:03
+-- 產生時間： 2026-03-11 07:36:29
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -20,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- 資料庫： `assignment`
 --
+CREATE DATABASE IF NOT EXISTS `assignment` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `assignment`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +30,7 @@ SET time_zone = "+00:00";
 -- 資料表結構 `answers`
 --
 
+DROP TABLE IF EXISTS `answers`;
 CREATE TABLE `answers` (
   `answer_id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED DEFAULT NULL,
@@ -35,12 +39,18 @@ CREATE TABLE `answers` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `answers`
+--
+
+TRUNCATE TABLE `answers`;
 -- --------------------------------------------------------
 
 --
 -- 資料表結構 `member`
 --
 
+DROP TABLE IF EXISTS `member`;
 CREATE TABLE `member` (
   `Member_id` int(10) UNSIGNED NOT NULL,
   `loginname` varchar(50) NOT NULL COMMENT '登入帳號，註冊後不可更改',
@@ -52,6 +62,11 @@ CREATE TABLE `member` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='會員資料表';
 
+--
+-- 資料表新增資料前，先清除舊資料 `member`
+--
+
+TRUNCATE TABLE `member`;
 --
 -- 傾印資料表的資料 `member`
 --
@@ -71,6 +86,7 @@ INSERT INTO `member` (`Member_id`, `loginname`, `pwd`, `member_name`, `member_te
 -- 資料表結構 `options`
 --
 
+DROP TABLE IF EXISTS `options`;
 CREATE TABLE `options` (
   `question_id` int(10) UNSIGNED NOT NULL,
   `option_order` int(10) UNSIGNED NOT NULL,
@@ -78,6 +94,11 @@ CREATE TABLE `options` (
   `is_other` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `options`
+--
+
+TRUNCATE TABLE `options`;
 --
 -- 傾印資料表的資料 `options`
 --
@@ -213,6 +234,7 @@ INSERT INTO `options` (`question_id`, `option_order`, `option_text`, `is_other`)
 -- 資料表結構 `questions`
 --
 
+DROP TABLE IF EXISTS `questions`;
 CREATE TABLE `questions` (
   `question_id` int(10) UNSIGNED NOT NULL,
   `page_id` int(10) UNSIGNED NOT NULL,
@@ -223,6 +245,11 @@ CREATE TABLE `questions` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `questions`
+--
+
+TRUNCATE TABLE `questions`;
 --
 -- 傾印資料表的資料 `questions`
 --
@@ -275,6 +302,7 @@ INSERT INTO `questions` (`question_id`, `page_id`, `type_id`, `question_text`, `
 -- 資料表結構 `question_attributes`
 --
 
+DROP TABLE IF EXISTS `question_attributes`;
 CREATE TABLE `question_attributes` (
   `id` int(11) NOT NULL,
   `question_id` int(10) UNSIGNED NOT NULL,
@@ -282,18 +310,29 @@ CREATE TABLE `question_attributes` (
   `attr_value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `question_attributes`
+--
+
+TRUNCATE TABLE `question_attributes`;
 -- --------------------------------------------------------
 
 --
 -- 資料表結構 `question_types`
 --
 
+DROP TABLE IF EXISTS `question_types`;
 CREATE TABLE `question_types` (
   `type_id` int(10) UNSIGNED NOT NULL,
   `type_name` varchar(50) NOT NULL,
   `type_description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `question_types`
+--
+
+TRUNCATE TABLE `question_types`;
 --
 -- 傾印資料表的資料 `question_types`
 --
@@ -317,6 +356,7 @@ INSERT INTO `question_types` (`type_id`, `type_name`, `type_description`) VALUES
 -- 資料表結構 `survey_pages`
 --
 
+DROP TABLE IF EXISTS `survey_pages`;
 CREATE TABLE `survey_pages` (
   `page_id` int(10) UNSIGNED NOT NULL,
   `page_number` int(10) UNSIGNED NOT NULL,
@@ -325,6 +365,11 @@ CREATE TABLE `survey_pages` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- 資料表新增資料前，先清除舊資料 `survey_pages`
+--
+
+TRUNCATE TABLE `survey_pages`;
 --
 -- 傾印資料表的資料 `survey_pages`
 --
@@ -458,6 +503,7 @@ ALTER TABLE `options`
 ALTER TABLE `questions`
   ADD CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`page_id`) REFERENCES `survey_pages` (`page_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `questions_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `question_types` (`type_id`);
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
