@@ -25,9 +25,11 @@ try {
     $result_questions = safeQuery($sql_questions);
     $all_questions = $result_questions->result->fetch_all(MYSQLI_ASSOC);
     
+    $all_questionsIds = [];
     // 驗證所有必填問題
     foreach ($all_questions as $question) {
         if ($question['is_required']) {
+            $all_questionsIds[] = $question['question_id'];
             $field_name = 'question_' . $question['question_id'];
             if (!isset($_POST[$field_name]) || (is_array($_POST[$field_name]) && empty($_POST[$field_name])) || (!is_array($_POST[$field_name]) && trim($_POST[$field_name]) === '')) {
                 throw new Exception('請填寫所有必填問題');
@@ -36,10 +38,13 @@ try {
     }
     
     // 處理每個答案
-    foreach ($_POST as $key => $value) {
-        if (strpos($key, 'question_') === 0) {
-            $question_id = intval(str_replace('question_', '', $key));
-            
+    foreach ($all_questionsIds as $question_Id) {
+        $field_name = 'question_' . $question_Id;
+        if (isset($_POST[$field_name])) {
+            $value = $_POST[$field_name];
+            $key = $field_name;
+            $hasOther = isset($_POST[$field_name . '_has_other']) && $_POST[$field_name . '_has_other'] === 'true';
+            $otherValue = $hasOther ? $_POST[$field_name . '_other'] ?? '' : null;            
             // 檢查問題是否存在
             $question_exists = false;
             foreach ($all_questions as $q) {
@@ -55,7 +60,7 @@ try {
             
             // 處理多選值
             if (is_array($value)) {
-                $value = implode(', ', $value);
+                $value = implode(', ', $value) . "(其他: $otherValue)";
             } else {
                 $value = trim($value);
             }
