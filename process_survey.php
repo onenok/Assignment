@@ -28,8 +28,8 @@ try {
     $all_questionsIds = [];
     // 驗證所有必填問題
     foreach ($all_questions as $question) {
-        if ($question['is_required']) {
             $all_questionsIds[] = $question['question_id'];
+        if ($question['is_required']) {
             $field_name = 'question_' . $question['question_id'];
             if (!isset($_POST[$field_name]) || (is_array($_POST[$field_name]) && empty($_POST[$field_name])) || (!is_array($_POST[$field_name]) && trim($_POST[$field_name]) === '')) {
                 throw new Exception('請填寫所有必填問題');
@@ -38,13 +38,15 @@ try {
     }
     
     // 處理每個答案
-    foreach ($all_questionsIds as $question_Id) {
-        $field_name = 'question_' . $question_Id;
+    foreach ($all_questionsIds as $question_id) {
+        $field_name = 'question_' . $question_id;
         if (isset($_POST[$field_name])) {
             $value = $_POST[$field_name];
             $key = $field_name;
-            $hasOther = isset($_POST[$field_name . '_has_other']) && $_POST[$field_name . '_has_other'] === 'true';
-            $otherValue = $hasOther ? $_POST[$field_name . '_other'] ?? '' : null;            
+            $hasOther = isset($_POST[$field_name . '_has_other']) && $_POST[$field_name . '_has_other'] === '1';
+            $otherValue = $hasOther ? $_POST[$field_name . '_other'] ?? '' : null;
+
+            // old logic but i don't want to del
             // 檢查問題是否存在
             $question_exists = false;
             foreach ($all_questions as $q) {
@@ -57,6 +59,7 @@ try {
             if (!$question_exists) {
                 continue;
             }
+            // ^ old logic ^
             
             // 處理多選值
             if (is_array($value)) {

@@ -1,3 +1,26 @@
+CIS223 Web Application Development CA/ CIS226 Advanced Web Application Development
+Assignment (30%)
+Background
+Your company is employed as the web application developer and you are now requested to create a web-based application which help the institute to conduct the online survey.
+The web application required to have the following function:
+•	Interviewee information should be collected.
+•	Interviewee can browse the website.
+•	Interviewee can answer all question in the web. (At least 10 pages with different kinds of controls)
+•	All answers should be stored in the mysql database.
+Student should setup the server in the local machine and run the web on local machine only. Thus, student should install the web server and database server. You can choose any platform and framework to create the website.
+Student should use html, css, or/and javascript to design their own website. 
+Student should also design the database and create tables. 
+Deliverables:
+1.	Complete website
+Zip the root folder and submit to moodle.
+2.	Database 
+Export the database as .sql file and submit to moodle.
+3.	User manual
+Use a word document to make the user manual and submit to moodle.
+Due date: 17th April 2026 23:59pm
+
+
+
 CIS223 網頁應用程式開發 CA / CIS226 進階網頁應用程式開發
 分配（30%）
 背景

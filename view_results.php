@@ -32,6 +32,8 @@ foreach ($answers as $answer) {
     }
     $answers_by_page[$page_title][] = $answer;
 }
+
+
 ?>
 
 <!DOCTYPE html>

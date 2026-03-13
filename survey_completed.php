@@ -74,7 +74,7 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
             background: conic-gradient(#007bff 0deg var(--progress), #e9ecef var(--progress) 360deg);
             position: relative;
             margin: 0 auto 20px;
-            animation: fillProgress 2.5s ease-out forwards;
+            animation: fillProgress 2s ease-out forwards;
             transition: --progress 0s ease-out;
         }
 
