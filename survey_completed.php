@@ -141,38 +141,18 @@ $progress = $total_questions > 0 ? round(($answered['answered_questions'] / $tot
 
         .action-buttons {
             margin-top: 30px;
-        }
-
-        .btn-primary {
-            background: #007bff;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 0 10px;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 0 10px;
-        }
-
-        .btn-primary:hover,
-        .btn-secondary:hover {
-            opacity: 0.9;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
 
 <body>
+    <?php require_once 'nav.php'; ?>
     <div class="container">
         <div class="card">
             <div class="success-icon">

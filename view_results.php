@@ -41,7 +41,8 @@ foreach ($answers as $answer) {
 <head>
     <meta charset="UTF-8">
     <title>我的問卷結果</title>
-    <link rel="stylesheet" href="form_default.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
+    <link rel="stylesheet" href="form_default.css?v=<?php echo filemtime('form_default.css'); ?>">
     <style>
         .container {
             max-width: 1000px;
@@ -104,6 +105,7 @@ foreach ($answers as $answer) {
     </style>
 </head>
 <body>
+    <?php require_once 'nav.php'; ?>
     <div class="container">
         <a href="index.php" class="back-button">← 返回首頁</a>
 

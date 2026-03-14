@@ -631,7 +631,7 @@ $stmt->close();
 
             <?php if ($checking): ?>
                 <div class="navigation-buttons">
-                    <a href="survey.php?page=<?php echo count($pages); ?>" class="navigation-buttons button">
+                    <a href="survey.php?page=<?php echo count($pages); ?>" class="navigation-buttons button btn-secondary">
                         上一頁
                     </a>
                     <button type="submit" class="navigation-buttons button" onclick="return submitFinal()">
