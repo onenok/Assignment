@@ -1,11 +1,11 @@
 <?php
 session_start();
-
+require_once 'connect.php';
 // 1. Check if user is logged-in (true/false)
 $isLoggedIn = !empty($_SESSION['login']);
 // If yes, use their name. If no, they are just a "Visitor"
 $username = $isLoggedIn ? $_SESSION['login'] : "訪客";
-
+$userId = $isLoggedIn ? $_SESSION['member_id'] : null;
 // 2. All messages to show on top of home page
 $messages = [
     'signup_already_logged_in' => '您已經登入了，無法註冊新帳號。',
@@ -96,17 +96,37 @@ $display_msg = $messages[$msg_key] ?? '';
 
 
         <div class="public-actions">
-            <a href="survey.php" class="action-card"> <!-- survey -->
-                <div>📋</div>
-                <div>
-                    填寫問卷<br>
-                    <?php if ($isLoggedIn): ?>
-                        <span>(已登入)</span>
-                    <?php else: ?>
-                        <span>(需要登入, 以確保不會重復填寫問卷.)</span>
-                    <?php endif; ?>
-                </div>
-            </a>
+            <?php // 檢查是否已完成問卷
+            $completed = false;
+            if ($isLoggedIn) {
+                $sql_completed = "SELECT COUNT(*) as count FROM answers WHERE user_id = ?";
+                $stmt = $conn->prepare($sql_completed);
+                $stmt->bind_param("i", $userId);
+                $stmt->execute();
+                $completed = $stmt->get_result()->fetch_assoc()['count'] > 0;
+                $stmt->close();
+            } ?>
+            <?php if ($completed): ?>
+                <a href="survey_completed.php" class="action-card"> <!-- survey -->
+                    <div>📋</div>
+                    <div>
+                        問卷已完成
+                    </div>
+                </a>
+            <?php else: ?>
+
+                <a href="survey.php" class="action-card"> <!-- survey -->
+                    <div>📋</div>
+                    <div>
+                        填寫問卷<br>
+                        <?php if ($isLoggedIn): ?>
+                            <span>(已登入)</span>
+                        <?php else: ?>
+                            <span>(需要登入, 以確保不會重復填寫問卷.)</span>
+                        <?php endif; ?>
+                    </div>
+                </a>
+            <?php endif; ?>
         </div>
         <!-- 3. Logic: Only members can see these cards -->
         <?php if ($isLoggedIn): ?>

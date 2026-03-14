@@ -117,7 +117,7 @@ $checking = false;
 if (isset($_GET['check'])) {
     $checking = true;
 }
-// 取得當前頁面的問題
+// 取得問題
 $sql_questions = "SELECT q.*, t.type_name 
                   FROM questions q 
                   JOIN question_types t ON q.type_id = t.type_id 
@@ -139,6 +139,8 @@ $stmt->close();
     <?php else: ?>
         <title>問卷調查 - 第<?php echo $current_page; ?>頁</title>
     <?php endif; ?>
+    <script src="https://cdn.jsdelivr.net/npm/validator@13.15.23/validator.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1.10.0/bundle/libphonenumber-js.min.js"></script>
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
     <link rel="stylesheet" href="form_default.css?v=<?php echo filemtime('form_default.css'); ?>">
     <style>
@@ -217,7 +219,6 @@ $stmt->close();
             color: red;
             font-size: 12px;
             margin-top: 5px;
-            display: none;
         }
 
         .success-message {
@@ -407,14 +408,17 @@ $stmt->close();
                     $requiredClass = $pre_isRequired;
                     $saved_value = $saved_answers[$question_id]['main'] ?? '';
                     $saved_other = $saved_answers[$question_id]['other'] ?? '';
+                    $question_attr = $question['question_attr'] ?? '{}';
+                    $placeholder = $question['placeholder'] ?? '';
                 ?>
                     <?php if ($shouldList): ?>
                         <div class="form-input-group">
                             <label class="form-label <?php echo $requiredClass; ?>">
-                                <?php echo htmlspecialchars($question['question_text']); ?>
+                                <?php echo htmlspecialchars($question['question_text']); ?><?php echo ($placeholder ? '（' . htmlspecialchars($placeholder) . '）' : '') ?>
                             </label>
                             <div class="debug-info" style="display:none;">
                                 <pre><?php echo htmlspecialchars(print_r($question, true)); ?></pre>
+                                <pre><?php echo (var_dump($question_attr)); ?></pre>
                                 <pre><?php echo htmlspecialchars(print_r([$saved_value, $saved_other], true)); ?></pre>
                             </div>
                             <?php
@@ -589,15 +593,11 @@ $stmt->close();
                                     value="<?php echo htmlspecialchars($saved_value); ?>">
                             <?php elseif ($question['type_name'] == 'number'): ?>
                                 <!-- Number Type -->
-                                <?php
-                                $stmt->bind_param("i", $question_id);
-                                $stmt->execute();
-                                $options = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-                                ?>
                                 <input type="number" name="<?php echo $question_name; ?>"
                                     class="form-input" <?php echo $isRequired; ?>
                                     value="<?php echo htmlspecialchars($saved_value); ?>"
-                                    min="<?php echo !empty($options[0]['option_text']) ? htmlspecialchars($options[0]['option_text']) : ''; ?>">
+                                    min="<?php echo get_attr_for_input($question_attr, "min"); ?>"
+                                    max="<?php echo get_attr_for_input($question_attr, "max"); ?>">
                             <?php elseif ($question['type_name'] == 'email'): ?>
                                 <!-- Email Type -->
                                 <input type="email" name="<?php echo $question_name; ?>"
@@ -607,7 +607,47 @@ $stmt->close();
                                 <!--Tel Type-->
                                 <input type="tel" name="<?php echo $question_name; ?>"
                                     class="form-input" <?php echo $isRequired; ?>
-                                    value="<?php echo htmlspecialchars($saved_value); ?>">
+                                    value="<?php echo htmlspecialchars($saved_value); ?>"
+                                    <?php echo get_attr_for_input($question_attr, "pattern"); ?>>
+                                <span class="error-message" id="<?php echo $question_name; ?>-error"></span>
+                                <script>
+                                    (function() {
+                                        const errorSpan = document.getElementById('<?php echo $question_name; ?>-error');
+                                        const inputField = document.querySelector('input[name="<?php echo $question_name; ?>"]')
+                                        function validatePhoneNumber() {
+                                            const value = inputField.value.trim();
+                                            console.log(value); // 顯示輸入值到控制台
+                                            // 清空之前的自訂錯誤
+                                            inputField.setCustomValidity('');
+
+                                            if (value === '') {
+                                                errorSpan.textContent = '';
+                                                return; // 讓 required 處理
+                                            }
+
+                                            try {
+                                                // 使用 libphonenumber-js 驗證
+                                                const phoneNumber = libphonenumber.parsePhoneNumber(value, 'HK'); // HK = 預設香港
+                                                const libphonenumberCheck = phoneNumber.isValid();
+                                                const ValidatorCheck = validator.isMobilePhone(value)
+                                                console.log(libphonenumberCheck, "\n", ValidatorCheck); // 顯示解析結果到控制台
+                                                // 使用 Validator.js
+                                                if (!libphonenumberCheck || !ValidatorCheck) {
+                                                    inputField.setCustomValidity('請輸入有效的電話號碼（包含國家區號）');
+                                                    errorSpan.textContent = '請輸入有效的電話號碼（包含國家區號）';
+                                                } else {
+                                                    inputField.setCustomValidity(''); // 清空錯誤
+                                                    errorSpan.textContent = '';
+                                                }
+                                            } catch (e) {
+                                                inputField.setCustomValidity('電話格式錯誤，請輸入如 +852 76543210');
+                                                errorSpan.textContent = '電話格式錯誤，請輸入如 +852 76543210';
+                                            }
+                                        }
+                                        inputField.addEventListener('input', validatePhoneNumber);
+                                        validatePhoneNumber();
+                                    })();
+                                </script>
                             <?php elseif ($question['type_name'] == 'range'): ?>
                                 <!-- Range Type -->
                                 <input type="range" name="<?php echo $question_name; ?>"
@@ -620,7 +660,7 @@ $stmt->close();
                                 </script>
                             <?php endif; ?>
 
-                            <div class="error-message" id="error_<?php echo $question_id; ?>">
+                            <div class="error-message" id="error_<?php echo $question_id; ?>" style="display: none;">
                                 此為必填問題
                             </div>
                         </div>

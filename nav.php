@@ -5,7 +5,7 @@ $isLoggedIn = !empty($_SESSION['login']);
 $username = $isLoggedIn ? $_SESSION['login'] : "訪客";
 ?>
 <nav class="navbar">
-    <div class="logo"><a href="index.php">我的網站</a></div>
+    <div class="logo"><a href="index.php">線上問卷系統</a></div>
     <div class="nav-links">
         <?php if ($isLoggedIn): ?>
             <!-- If logged in, show name and Logout -->

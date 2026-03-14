@@ -46,26 +46,11 @@ try {
             $hasOther = isset($_POST[$field_name . '_has_other']) && $_POST[$field_name . '_has_other'] === '1';
             $otherValue = $hasOther ? $_POST[$field_name . '_other'] ?? '' : null;
 
-            // old logic but i don't want to del
-            // 檢查問題是否存在
-            $question_exists = false;
-            foreach ($all_questions as $q) {
-                if ($q['question_id'] == $question_id) {
-                    $question_exists = true;
-                    break;
-                }
-            }
-            
-            if (!$question_exists) {
-                continue;
-            }
-            // ^ old logic ^
-            
             // 處理多選值
             if (is_array($value)) {
-                $value = implode(', ', $value) . "(其他: $otherValue)";
+                $value = implode(', ', $value) . ($otherValue ? "(其他: $otherValue)" : '');
             } else {
-                $value = trim($value);
+                $value = trim($value) . ($otherValue ? "(其他: $otherValue)" : '');
             }
             
             // 插入答案

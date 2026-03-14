@@ -44,9 +44,11 @@ if (!password_verify($pwd, $row['pwd'])) {
     exit;
 }
 
+$memberId = $row['Member_id'];
+
 // 5. All good! Do the final delete
-$sql = "DELETE FROM member WHERE loginname = ?";
-$result = safeQuery($sql, "s", [$name]);
+$sql = "DELETE FROM member WHERE Member_id = ?; DELETE FROM answers WHERE user_id = ?;";
+$result = safeQuery($sql, "s", [$memberId]);
 
 // 6. Success: Clear session and go to index
 if ($result->affected_rows > 0) {
